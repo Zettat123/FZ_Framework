@@ -1,0 +1,63 @@
+.root {
+  display: flex;
+  padding-left: 32px;
+  flex-direction: column;
+}
+
+.alarmBlock {
+  width: 480px;
+  height: 160px;
+  font-size: 48px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.safe {
+  background-color: darkseagreen;
+  color: black;
+}
+
+.danger {
+  background-color: firebrick;
+  color: white;
+}
+
+.invisible {
+  display: none;
+}
+
+.title {
+  color: red;
+  font-size: 48px;
+}
+
+.item {
+  display: flex;
+  font-size: 20px;
+  .itemName {
+    width: 160px;
+    text-align: right;
+  }
+
+  .itemName::after {
+    content: ':';
+  }
+
+  .itemValue {
+    padding-left: 24px;
+    width: 320px;
+  }
+
+  & + & {
+    margin-top: 8px;
+  }
+}
+
+.imageItem {
+  width: 640px;
+  height: 480px;
+}

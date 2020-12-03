@@ -1,0 +1,17 @@
+.vscode
+.tmp_versions
+__pycache__
+*.cmd
+*.ko
+*.mod
+*.mod.c
+*.o
+*.symvers
+*.order
+*.pyc
+*.out
+*.jpg
+*.png
+shmem-signal-ipc
+*.log
+
