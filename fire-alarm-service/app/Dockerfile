@@ -32,4 +32,3 @@ COPY ./fz_sdk/fz_sdk.py ./fz_sdk/
 ENV RUN_OPTIONS="--ipc=host --pid=host --device=/dev/fz_s_webcam:/dev/fz_s_webcam:rwm"
 
 ENTRYPOINT [ "python", "run.py" ]
-# ENTRYPOINT [ "python", "only_migration.py"]
