@@ -76,9 +76,6 @@ int read_dht11() {
   int cnt = 0, i;
   for (i = 0; i < 10; i++) data[i] = 0;
   change_pin_mode(pin, GPIO_DIRECTION_OUTPUT);
-  mdelay(500);
-  change_pin_value(pin, GPIO_VALUE_HIGH);
-  mdelay(1000);
 
   change_pin_value(pin, GPIO_VALUE_LOW);
   mdelay(20);
