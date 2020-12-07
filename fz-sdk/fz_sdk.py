@@ -7,15 +7,22 @@ from .fz_ipc.ipc_common import usleep
 from .fz_ipc.ipc_data_utils import *
 
 CALL_DEVICE_SERVICE_PORT = 29601
-CALL_DEVICE_URL = "http://172.17.0.1:%d/callDevice" % (
-    CALL_DEVICE_SERVICE_PORT)
+
+
+def get_call_device_url(target_address):
+    return "http://%s:%d/callDevice" % (target_address, CALL_DEVICE_SERVICE_PORT)
+
+
 PROCESS_MIGRATION_SERVICE_PORT = 29602
 DUMP_PROCESS_URL = "http://172.17.0.1:%d/dump" % (
     PROCESS_MIGRATION_SERVICE_PORT)
+
 HOST_MANAGER_SERVICE_PORT = 29603
 QUERY_DEVICE_URL = "http://172.17.0.1:%d/queryDevice" % (
     HOST_MANAGER_SERVICE_PORT)
 QUERY_CURRENT_HOST_NAME_URL = "http://172.17.0.1:%d/currentHostName" % (
+    HOST_MANAGER_SERVICE_PORT)
+QUERY_HOST_ADDRESS_URL = "http://172.17.0.1:%d/queryHost" % (
     HOST_MANAGER_SERVICE_PORT)
 SHM_LENGTH = 4*1024
 
@@ -46,13 +53,23 @@ def get_current_host_name():
 def get_host_name_of_device(device_name):
     resp = requests.get(QUERY_DEVICE_URL, params={
                         "deviceName": device_name}).json()
-    return resp["hostName"]
+    host_name = resp["hostName"]
+    real_device_name = resp["realDeviceName"]
+    return host_name, real_device_name
+
+
+def get_host_address_by_host_name(host_name):
+    resp = requests.get(QUERY_HOST_ADDRESS_URL, params={
+                        "hostname": host_name}).json()
+    return resp["value"]
 
 
 def fz_call_device(device_name, params={}, customized_device_call_function=None):
     print(device_name)
-    target_host_name = get_host_name_of_device(device_name)
+    target_host_name, real_device_name = get_host_name_of_device(device_name)
     print(target_host_name)
+    print(real_device_name)
+    device_name = real_device_name
     if target_host_name == "localhost":
         if customized_device_call_function is None:
             # ipc
@@ -74,7 +91,9 @@ def fz_call_device(device_name, params={}, customized_device_call_function=None)
             migrate_process(old_host_name)
             return ret
         else:
-            resp = requests.post(CALL_DEVICE_URL, data=params).json()
+            target_address = get_host_address_by_host_name(target_host_name)
+            resp = requests.post(get_call_device_url(
+                target_address), json={"deviceName": device_name, "params": params}).json()
             return resp["value"]
 
 

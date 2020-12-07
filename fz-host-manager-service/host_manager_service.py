@@ -88,15 +88,25 @@ def get_other_hosts():
 
 
 def get_local_devices():
-    ret = []
+    local_devices = []
     fz_device_file_list = list(
         filter(lambda x: x.startswith("fz_"), os.listdir("/dev")))
     for device_name in fz_device_file_list:
-        if device_name not in IGNORE_DEVICES:
-            ret.append(device_name)
+        local_devices.append(device_name)
+
     for device_name in EXTRA_DEVICES:
-        ret.append(device_name)
-    return ret
+        local_devices.append(device_name)
+
+    for device_alias in list(DEVICES_ALIAS.keys()):
+        real_device_name = DEVICES_ALIAS.get(device_alias)
+        if real_device_name in local_devices:
+            local_devices.append(device_alias)
+
+    for ignore_device_name in IGNORE_DEVICES:
+        if ignore_device_name in local_devices:
+            local_devices.remove(ignore_device_name)
+
+    return local_devices
 
 
 @app.route("/running", methods=["GET"])
@@ -133,10 +143,11 @@ def handle_add_new_host():
 @app.route("/queryDevice", methods=["GET"])
 def handle_query_device():
     device_name = request.args.get("deviceName")
-    while devices.get(device_name) not in list(hosts.keys()) and devices.get(device_name) != "localhost":
-        device_name = devices.get(device_name)
+    if device_name in list(DEVICES_ALIAS.keys()):
+        device_name = DEVICES_ALIAS.get(device_name)
     return json.dumps({
-        "hostName": devices.get(device_name)
+        "hostName": devices.get(device_name),
+        "realDeviceName": device_name
     })
 
 
