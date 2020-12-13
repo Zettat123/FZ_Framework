@@ -115,6 +115,8 @@ def ipc_with_call_device_service(device_name, params):
 
 
 def migrate_process(target_host_name):
+    if get_current_host_name() == target_host_name:
+        return
     container_id = get_container_id()
     try:
         requests.post(DUMP_PROCESS_URL, json={
