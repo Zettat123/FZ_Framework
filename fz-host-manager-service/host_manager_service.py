@@ -173,6 +173,27 @@ def handle_current_host():
     return json.dumps({"currentHostName": HOSTNAME})
 
 
+@app.route("/quitNotice", methods=["POST"])
+def handle_quit_notice():
+    quit_address = request.remote_addr
+    hosts_view = list(hosts.items())
+    for h_name, h_address in hosts_view:
+        if h_address == quit_address:
+            hosts.pop(h_name)
+            break
+    return "OK"
+
+
+@app.route("/quit", methods=["POST"])
+def handle_quit():
+    hosts_view = list(hosts.items())
+    for h_name, h_address in hosts_view:
+        if h_address == HOST_IP:
+            continue
+        requests.post("http://{}:{}/quitNotice".format(h_address, PORT))
+    return "OK"
+
+
 if __name__ == '__main__':
     update_devices_thread = threading.Thread(
         None, target=update_devices_thread_function, name="update_devices_thread")
